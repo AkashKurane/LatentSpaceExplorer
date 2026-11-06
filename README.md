@@ -20,7 +20,7 @@ High-dimensional representations produced by machine-learning models are difficu
 1. **Streamlit interface** collects text, display options, and optional image uploads.
 2. **Embedding models** encode text with Sentence-BERT and encode text or images with CLIP. The VAE checkpoint encodes Fashion-MNIST images separately.
 3. **Analysis** applies PCA or UMAP for text visualization, PCA for CLIP and VAE visualization, K-Means for text clusters, and cosine similarity for nearest-neighbour comparisons.
-4. **Interpretation** optionally sends cluster text to Gemini for labels. When a Gemini request fails, a local TF-IDF keyword-based fallback is used.
+4. **Interpretation** optionally sends cluster text to Gemini for labels. If a configured Gemini request fails, a local TF-IDF keyword-based fallback is used. Without a configured key, the app reports that Gemini is unavailable and does not make a request.
 
 The displayed coordinates are two-dimensional projections. Text-neighbour similarity is calculated from the original Sentence-BERT vectors, not from plotted coordinates.
 
@@ -66,7 +66,7 @@ Gemini cluster naming requires a Google Gemini API key. Create `.streamlit/secre
 GEMINI_API_KEY = "your-api-key"
 ```
 
-This file is ignored by Git. Never commit API keys. Without a configured key, the app reports that Gemini is unavailable; the TF-IDF fallback is used when a Gemini request is attempted and fails.
+This file is ignored by Git. Never commit API keys. Without a configured key, the app reports that Gemini is unavailable. The local TF-IDF fallback is used only after a Gemini request is attempted and fails.
 
 ## Run
 
@@ -80,7 +80,7 @@ Streamlit prints a local URL (normally `http://localhost:8501`). Model downloads
 
 ## Results
 
-The repository includes an existing VAE reconstruction output. It is a model result figure, not a screenshot of the Streamlit interface.
+The repository includes an existing VAE reconstruction output. It is a model result figure, not a screenshot of the Streamlit interface; no Streamlit UI screenshot is currently included.
 
 ![Original and reconstructed Fashion-MNIST samples](vae_reconstruction.png)
 
