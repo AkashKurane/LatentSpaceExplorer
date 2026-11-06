@@ -14,6 +14,7 @@ from sentence_transformers import SentenceTransformer
 from sklearn.decomposition import PCA
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import Ridge
 from vae_model import VAE
 
 
@@ -205,6 +206,52 @@ def generate_clip_image_embedding(image):
     features = features / features.norm(dim=-1, keepdim=True)
 
     return features.cpu().numpy()[0]
+
+@st.cache_resource
+def load_sbert_to_clip_mapper():
+    """
+    Learn a small project-specific bridge from Sentence-BERT vectors to CLIP text space.
+
+    The mapping is calibrated from paired text anchors encoded by both models.
+    It is an exploratory alignment, not a generally validated cross-model mapping.
+    """
+    anchor_sentences = [
+        "Machine learning helps computers learn from data.",
+        "Deep learning uses neural networks.",
+        "Artificial intelligence is transforming technology.",
+        "Python is widely used for machine learning.",
+        "Neural networks are inspired by the human brain.",
+        "A healthy diet improves physical fitness.",
+        "Regular exercise strengthens the body.",
+        "Sleep is important for mental and physical health.",
+        "Walking daily improves cardiovascular health.",
+        "Protein helps muscles recover after exercise.",
+        "Football is a popular international sport.",
+        "Basketball requires teamwork and coordination.",
+        "Cricket is played with a bat and ball.",
+        "Athletes train regularly to improve performance.",
+        "The Olympic Games bring athletes together.",
+        "Python supports object oriented programming.",
+        "HTML is used to structure web pages.",
+        "SQL is used to manage relational databases.",
+        "React is a JavaScript library for user interfaces.",
+        "Git helps developers manage source code."
+    ]
+    sbert_model = load_model()
+    sbert_anchors = sbert_model.encode(
+        anchor_sentences,
+        convert_to_numpy=True,
+        normalize_embeddings=True,
+        show_progress_bar=False
+    )
+    clip_anchors = np.vstack([
+        generate_clip_text_embedding(sentence)
+        for sentence in anchor_sentences
+    ])
+    mapper = Ridge(alpha=10.0)
+    mapper.fit(sbert_anchors, clip_anchors)
+    return mapper
+
 
 # --------------------------------
 # PAGE CONFIGURATION
@@ -657,6 +704,101 @@ if st.button("Generate Combined CLIP Visualisation", key="generate_clip_plot"):
             )
         except Exception as error:
             st.error(f"Could not generate the CLIP visualisation: {error}")
+
+
+# ----------------------------------
+# ASSIGNMENT U3: SENTENCE-BERT + CLIP IMAGE CROSS-MODEL VIEW
+# ----------------------------------
+
+st.subheader("Assignment U3: Sentence-BERT Text + CLIP Image Alignment")
+st.write(
+    "This experimental view uses Sentence-BERT for text and CLIP for images. "
+    "A small Ridge mapping is calibrated from paired anchor sentences encoded "
+    "by both models so the text vectors can be projected approximately into "
+    "CLIP text space before plotting them with CLIP image vectors."
+)
+
+aligned_text_input = st.text_area(
+    "Text samples for Sentence-BERT (one sentence per line)",
+    "A person playing basketball\n"
+    "A dog running in a park\n"
+    "Artificial intelligence is transforming technology\n"
+    "A healthy diet improves physical fitness\n"
+    "Python is used to build software applications",
+    key="sbert_clip_alignment_text"
+)
+
+if st.button("Generate Sentence-BERT + CLIP Image Plot", key="generate_sbert_clip_plot"):
+    aligned_texts = [
+        line.strip() for line in aligned_text_input.splitlines() if line.strip()
+    ]
+    if not aligned_texts:
+        st.warning("Enter at least one text sentence.")
+    elif not image_records:
+        st.warning("Upload at least one image above before generating this plot.")
+    else:
+        try:
+            with st.spinner(
+                "Calibrating the Sentence-BERT-to-CLIP bridge and encoding samples..."
+            ):
+                mapper = load_sbert_to_clip_mapper()
+                sbert_model = load_model()
+                sbert_vectors = sbert_model.encode(
+                    aligned_texts,
+                    convert_to_numpy=True,
+                    normalize_embeddings=True,
+                    show_progress_bar=False
+                )
+                mapped_text_vectors = mapper.predict(sbert_vectors)
+
+                image_vectors = np.vstack([
+                    generate_clip_image_embedding(image)
+                    for _, image in image_records
+                ])
+
+                mapped_text_vectors = np.asarray(mapped_text_vectors, dtype=np.float32)
+                text_norms = np.linalg.norm(mapped_text_vectors, axis=1, keepdims=True)
+                mapped_text_vectors = mapped_text_vectors / np.maximum(text_norms, 1e-12)
+
+                joint_vectors = np.vstack([mapped_text_vectors, image_vectors])
+                if joint_vectors.shape[0] < 2 or not np.isfinite(joint_vectors).all():
+                    raise ValueError("The alignment produced invalid or insufficient vectors.")
+
+                coordinates = PCA(n_components=2).fit_transform(joint_vectors)
+                alignment_df = pd.DataFrame({
+                    "Dimension 1": coordinates[:, 0],
+                    "Dimension 2": coordinates[:, 1],
+                    "Label": aligned_texts + [name for name, _ in image_records],
+                    "Type": (
+                        ["Sentence-BERT text (mapped)"] * len(aligned_texts)
+                        + ["CLIP image"] * len(image_records)
+                    )
+                })
+
+            alignment_fig = px.scatter(
+                alignment_df,
+                x="Dimension 1",
+                y="Dimension 2",
+                color="Type",
+                hover_name="Label",
+                title="Sentence-BERT Text (Mapped) + CLIP Image Embeddings",
+                template="plotly_dark"
+            )
+            alignment_fig.update_traces(marker=dict(size=13))
+            st.plotly_chart(alignment_fig, width="stretch")
+            st.success(
+                f"Visualised {len(aligned_texts)} Sentence-BERT text samples "
+                f"and {len(image_records)} CLIP images."
+            )
+            st.info(
+                "Alignment note: the bridge was fitted using 20 paired project anchor "
+                "sentences represented by both Sentence-BERT and CLIP text encoders. "
+                "This is a small, project-specific linear approximation; it is not a "
+                "validated universal mapping and the 2D PCA plot should be interpreted "
+                "as exploratory rather than as a calibrated semantic distance scale."
+            )
+        except Exception as error:
+            st.error(f"Could not generate the cross-model alignment plot: {error}")
 
 
 # ----------------------------------
