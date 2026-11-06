@@ -1,0 +1,24 @@
+name: Python syntax and repository checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  syntax-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile project Python files
+        run: python -m compileall -q app.py vae_model.py train_vae.py test_vae.py test_streamlit.py
+      - name: Check expected project artifacts
+        run: |
+          test -s requirements.txt
+          test -s README.md
+          test -s MODEL_CARD.md
+          test -s fashion_vae.pth
