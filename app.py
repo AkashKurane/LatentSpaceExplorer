@@ -450,7 +450,7 @@ df = pd.DataFrame({
 
 st.divider()
 
-st.subheader("U1 – Sentence-BERT Semantic Latent Space")
+st.subheader("Sentence-BERT Semantic Latent Space")
 
 st.write(
     "Each point represents a sentence. "
@@ -567,7 +567,7 @@ st.caption("P6 | Text & Image Latent-Space Explorer")
 # AI-POWERED CLUSTER INTERPRETATION
 # ----------------------------------
 
-st.subheader("U2 – Cluster Naming (Gemini with TF-IDF Fallback)")
+st.subheader("Cluster Naming (Gemini with TF-IDF Fallback)")
 
 # Prepare sentences grouped by K-Means cluster
 cluster_payload = []
@@ -616,7 +616,7 @@ if st.session_state.cluster_insights:
 # U3: CLIP TEXT AND IMAGE EXPLORER
 # ----------------------------------
 
-st.header("U3 – CLIP Text & Image Shared Embedding Space")
+st.header("CLIP Text & Image Shared Embedding Space")
 st.write(
     "CLIP encodes text and images into a shared representation space. "
     "This joint visualisation uses CLIP's own text and image encoders."
@@ -642,7 +642,7 @@ if uploaded_images:
 
 st.caption(
     "Important assignment distinction: this shared plot uses CLIP text and CLIP image "
-    "embeddings. Sentence-BERT vectors used in U1, U2 and U5 are a separate model space "
+    "embeddings. Sentence-BERT vectors used in the other parts of this app are a separate model space "
     "and are not directly concatenated with CLIP vectors."
 )
 
@@ -708,7 +708,7 @@ if st.button("Generate Combined CLIP Visualisation", key="generate_clip_plot"):
 # ASSIGNMENT U3: SENTENCE-BERT + CLIP IMAGE CROSS-MODEL VIEW
 # ----------------------------------
 
-st.subheader("Assignment U3: Sentence-BERT Text + CLIP Image Alignment")
+st.subheader("Sentence-BERT Text + CLIP Image Alignment")
 st.write(
     "This experimental view uses Sentence-BERT for text and CLIP for images. "
     "A small Ridge mapping is calibrated from paired anchor sentences encoded "
@@ -803,7 +803,7 @@ if st.button("Generate Sentence-BERT + CLIP Image Plot", key="generate_sbert_cli
 # VAE LATENT SPACE EXPLORER
 # ----------------------------------
 
-st.header("U4 – VAE Latent-Space Decoding")
+st.header("VAE Latent-Space Decoding")
 st.write(
     "Explore Fashion-MNIST images in a 2D latent space. "
     "Select a point to decode its latent representation."
@@ -907,7 +907,7 @@ if st.session_state.get("vae_explorer_started", False):
 # ----------------------------------
 
 st.divider()
-st.header("U5 – Occupation–Gender Association Probe")
+st.header("Occupation–Gender Association Probe")
 st.write(
     "This exploratory probe compares Sentence-BERT similarities for "
     "matched sentence templates. It demonstrates how wording can affect "
