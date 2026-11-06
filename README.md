@@ -1,176 +1,316 @@
-# Text & Image Latent-Space Explorer
+# 🧠 Text & Image Latent-Space Explorer
 
-**P6 – Generative AI Mini-Project**
-
-An interactive Streamlit application for exploring sentence embeddings, clustering, CLIP text–image representations, Fashion-MNIST VAE latent decoding, and an exploratory occupation–gender association probe.
+An interactive Generative AI project that visualises how AI models represent text and images as numerical embeddings. It allows users to explore semantic relationships, perform clustering, compare text and image representations, and reconstruct images using a Variational Autoencoder (VAE).
 
 <p align="center">
-  <a href="https://latentspaceexplorer.streamlit.app/"><strong>🚀 Live Demo</strong></a>
-  &nbsp; | &nbsp;
-  <a href="https://github.com/AkashKurane/LatentSpaceExplorer"><strong>📂 GitHub Repository</strong></a>
+  **🚀 Live Application:** https://latentspaceexplorer.streamlit.app/
+  <br>
+  **📂 GitHub Repository:** https://github.com/AkashKurane/LatentSpaceExplorer
 </p>
 
 ---
 
-## Project Overview
+## 1. Project Overview
 
-Machine-learning models represent text and images as numerical vectors called **embeddings**. Their high dimensionality makes direct inspection difficult. This project provides an interactive interface to project, cluster, compare and decode selected representations.
+Machine learning models convert text and images into numerical representations called **embeddings**. These embeddings capture patterns and relationships in the input data.
 
-## Assignment Units and Implementation Status
+However, embeddings usually contain hundreds of dimensions, making them difficult to visualise directly.
 
-| Unit | Assignment focus | Implemented functionality |
-|---|---|---|
-| **U1** | 2D projection and nearest neighbours | Sentence-BERT, PCA/UMAP, K-Means, point selection and cosine-similarity neighbours |
-| **U2** | LLM cluster naming and Fashion-MNIST VAE training | Gemini attempt with TF-IDF fallback; VAE training script and checkpoint |
-| **U3** | Sentence-BERT text and CLIP image embeddings in one plot | CLIP-native text/image plot plus an experimental Ridge bridge mapping Sentence-BERT text into CLIP text space using 20 paired anchor sentences, then plotting with CLIP image vectors |
-| **U4** | Decode a selected latent point with VAE | Fashion-MNIST VAE latent projection and selected-point decoding |
-| **U5** | Occupation–gender association probe | Matched prompts, cosine similarities, table and grouped chart |
+The Text & Image Latent-Space Explorer provides an interactive interface to:
 
-## U1 – Sentence-BERT Latent-Space Explorer
+- Convert sentences into semantic embeddings using Sentence-BERT.
+- Reduce high-dimensional embeddings into two dimensions using PCA and UMAP.
+- Group similar sentences using K-Means clustering.
+- Find semantically similar sentences using cosine similarity.
+- Generate cluster labels using Gemini, with a TF-IDF fallback.
+- Visualise text and images using CLIP embeddings.
+- Explore an experimental Sentence-BERT-to-CLIP alignment.
+- Train and explore a Variational Autoencoder using Fashion-MNIST.
+- Decode selected latent representations into reconstructed images.
+- Examine occupation–gender associations in sentence embeddings.
 
-- Pretrained model: `all-MiniLM-L6-v2`.
-- Encodes sample sentences and user-added sentences.
-- Supports PCA and UMAP 2D projections.
-- Applies K-Means clustering to the original embeddings.
-- Shows an interactive Plotly scatter plot, coloured by category or cluster.
-- Selecting a point displays the five nearest sentences using cosine similarity over the original high-dimensional vectors.
+## 2. Project Objectives
 
-## U2 – Cluster Naming and VAE Training
+1. Understand how AI models represent sentences and images in numerical vector spaces.
+2. Visualise semantic relationships through dimensionality reduction.
+3. Explore unsupervised clustering and nearest-neighbour search.
+4. Investigate shared text–image representations using CLIP.
+5. Understand latent-space learning and image reconstruction using a VAE.
+6. Explore possible model associations through an occupation–gender probe.
 
-### Cluster naming
+## 3. Features and Assignment Coverage
 
-The application groups sentences using K-Means and attempts to generate cluster names and descriptions using Google Gemini. When Gemini requests fail, a local TF-IDF keyword fallback provides keyword-based labels.
+| Assignment task | Implementation |
+|---|---|
+| U1 – Sentence embedding visualisation | Sentence-BERT, PCA, UMAP, K-Means and nearest-neighbour search |
+| U2 – Cluster interpretation and VAE training | Gemini cluster naming with TF-IDF fallback; Fashion-MNIST VAE training |
+| U3 – Text and image representation | CLIP shared embedding plot and experimental Sentence-BERT-to-CLIP alignment |
+| U4 – Latent-point decoding | VAE latent-space visualisation and selected-point image reconstruction |
+| U5 – Occupation–gender associations | Sentence-BERT similarity comparisons, results table and chart |
 
-**Observed deployment result:** TF-IDF fallback labels were displayed. Gemini-generated labels were not confirmed during the recorded public test. TF-IDF labels are not equivalent to LLM interpretations.
+## 4. Technologies and Tools
 
-### Fashion-MNIST VAE training
+| Technology | Purpose |
+|---|---|
+| Python 3.12 | Main programming language |
+| Streamlit | Interactive web application |
+| Sentence-Transformers | Sentence embedding generation |
+| all-MiniLM-L6-v2 | Sentence-BERT model |
+| Hugging Face Transformers | Pretrained CLIP model loading |
+| CLIP ViT-B/32 | Text and image embeddings |
+| PyTorch | VAE implementation and training |
+| torchvision | Fashion-MNIST dataset loading and image transformations |
+| scikit-learn | PCA, K-Means, cosine similarity, TF-IDF and Ridge regression |
+| UMAP | Nonlinear dimensionality reduction |
+| Plotly | Interactive visualisations |
+| Pandas and NumPy | Data handling and numerical operations |
+| Google Gemini API | Optional cluster naming and interpretation |
 
-`train_vae.py` trains a fully connected PyTorch VAE on the Fashion-MNIST training split and saves `fashion_vae.pth`.
+## 5. System Architecture
 
-Recorded configuration: 28×28 grayscale input, latent dimension 20, hidden size 400, Adam optimiser, learning rate 0.001, batch size 128 and 5 epochs. The loss combines binary cross-entropy reconstruction loss and KL divergence.
+The application consists of four main processing components:
 
-## U3 – Text and Image Embedding Visualisation
+### Text Processing
+- User enters sentences or adds custom text.
+- Sentence-BERT generates embeddings.
+- PCA or UMAP projects embeddings into two dimensions.
+- K-Means assigns cluster labels.
+- Cosine similarity retrieves the nearest sentences.
 
-The application uses `openai/clip-vit-base-patch32` to encode text prompts and uploaded JPG/PNG images. CLIP's text and image encoders produce vectors in a shared embedding space. The vectors are combined and projected to 2D with PCA.
+### Cluster Interpretation
+- Sentences are grouped according to their K-Means cluster.
+- The application attempts to send cluster information to Gemini.
+- Gemini is asked to generate a cluster name and description.
+- If the API request fails, a local TF-IDF keyword-based fallback generates labels.
 
-**Observed deployment test:** Five text samples and three uploaded images were plotted together as eight CLIP points.
+### Text and Image Processing
+- Users enter text descriptions and upload images.
+- CLIP's text encoder processes text.
+- CLIP's image encoder processes uploaded images.
+- Their compatible representations are combined and projected using PCA.
+- An additional experimental view maps Sentence-BERT text vectors toward CLIP text space using Ridge regression and paired anchor sentences.
 
-**Cross-model alignment view:** A separate U3 view now encodes text with Sentence-BERT and images with CLIP. It learns an experimental Ridge mapping from 20 paired project anchor sentences, each encoded by both Sentence-BERT and CLIP's text encoder. The mapped Sentence-BERT vectors are then plotted with CLIP image vectors. This avoids directly concatenating incompatible raw vectors. The bridge is small and project-specific, has not been formally evaluated on held-out data, and should be treated as exploratory rather than as a validated universal alignment. The original CLIP-native text/image plot is retained as a reference.
+### VAE Image Reconstruction
+- Fashion-MNIST images are loaded.
+- The VAE encoder generates latent representations.
+- PCA projects the latent representations into two dimensions.
+- A selected latent representation is passed to the decoder.
+- The reconstructed image is displayed beside the original image.
 
-## U4 – VAE Latent-Point Decoding
+## 6. Implementation Details
 
-The app loads the trained VAE checkpoint, encodes 500 Fashion-MNIST test examples, projects their latent means into two dimensions with PCA, and allows a selected point to be decoded. It shows the original image beside the decoded output.
+### A. Sentence-BERT Semantic Embeddings
 
-The VAE encoder is Flatten → Linear(784, 400) → ReLU → latent mean/log-variance (20 dimensions). The decoder is Linear(20, 400) → ReLU → Linear(400, 784) → Sigmoid → reshape to 28×28.
+The application uses the pretrained model `all-MiniLM-L6-v2` to convert sentences into numerical embeddings.
 
-**Limitation:** The compact VAE was trained for five epochs in the recorded run; reconstructed images can be blurry.
+The embeddings are projected into two dimensions using:
 
-## U5 – Occupation–Gender Association Probe
+**PCA (Principal Component Analysis)**
 
-The app compares three matched sentence templates for ten occupations:
+A linear dimensionality-reduction technique that preserves as much overall variance as possible.
 
-- Neutral: `A person works as a {occupation}.`
-- Man: `A man works as a {occupation}.`
-- Woman: `A woman works as a {occupation}.`
+**UMAP (Uniform Manifold Approximation and Projection)**
 
-It calculates cosine similarity between the neutral embedding and each gendered embedding, then displays the scores and man-minus-woman difference in a table and grouped bar chart.
+A nonlinear dimensionality-reduction technique that attempts to preserve local neighbourhood relationships.
 
-This is an exploratory, prompt- and model-dependent association signal. It is not a validated bias metric and must not be used for hiring or other consequential decisions.
+The application also uses K-Means clustering to group sentence embeddings.
 
-## Technology Stack
+Users can:
+- Select PCA or UMAP.
+- Change the number of clusters.
+- Choose category-based or cluster-based colouring.
+- Add custom sentences.
+- Select a point in the graph.
+- View the five nearest sentences.
 
-Python, Streamlit, Sentence-Transformers, Hugging Face Transformers, CLIP ViT-B/32, PyTorch, torchvision, Fashion-MNIST, scikit-learn, PCA, UMAP, K-Means, TF-IDF, Plotly, Pandas, NumPy and optional Google Gemini API.
+Nearest neighbours are calculated using cosine similarity on the original high-dimensional Sentence-BERT embeddings rather than the reduced 2D coordinates.
 
-## Repository Structure
+Cosine similarity is calculated as:
 
-```text
-LatentSpaceExplorer/
-├── app.py
-├── vae_model.py
-├── train_vae.py
-├── test_vae.py
-├── test_streamlit.py
-├── fashion_vae.pth
-├── vae_reconstruction.png
-├── requirements.txt
-├── MODEL_CARD.md
-├── README.md
-├── .gitignore
-└── .streamlit/
-    └── secrets.toml   # Local only; never commit
-```
+\[
+\text{Similarity}(A,B)=
+\frac{A\cdot B}{\|A\|\|B\|}
+\]
 
-Fashion-MNIST data is downloaded locally by torchvision when required. Pretrained model files are downloaded from Hugging Face on first use.
+### B. Cluster Naming with Gemini and TF-IDF
 
-## Installation
+K-Means produces numerical cluster labels. To make the clusters easier to understand, the application attempts to generate meaningful names and descriptions using the Gemini API.
 
-Use Python 3.12 for the environment used during project development.
+When Gemini is unavailable, the application uses TF-IDF (Term Frequency–Inverse Document Frequency) to identify recurring keywords.
 
-```powershell
-git clone https://github.com/AkashKurane/LatentSpaceExplorer.git
-cd LatentSpaceExplorer
-conda create -n latentspace python=3.12
-conda activate latentspace
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
+**Observed result:** During the recorded deployment test, Gemini could not complete the request. The application successfully displayed local TF-IDF fallback labels.
 
-For GPU acceleration, install a PyTorch build matching your operating system and CUDA version using the official [PyTorch installation selector](https://pytorch.org/get-started/locally/).
+TF-IDF is a statistical keyword-extraction technique, not an LLM-generated interpretation.
 
-## Gemini Configuration (Optional)
+### C. CLIP Text and Image Embeddings
 
-Create `.streamlit/secrets.toml` locally:
+The application uses:
 
-```toml
-GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
-```
+`openai/clip-vit-base-patch32`
 
-On Streamlit Community Cloud, add the same TOML entry under the app's **Settings → Secrets**.
+CLIP contains separate text and image encoders. These encoders produce representations in a shared embedding space, allowing text and image vectors to be compared.
 
-Never commit the key or secrets file. If Gemini is unavailable, the app falls back to TF-IDF cluster keywords.
+The application:
+1. Accepts multiple text descriptions.
+2. Accepts JPG, JPEG and PNG images.
+3. Generates CLIP text embeddings.
+4. Generates CLIP image embeddings.
+5. Combines the embeddings.
+6. Applies PCA for 2D visualisation.
+7. Displays text and image points using different colours.
 
-## Run the Application
+### Experimental Sentence-BERT and CLIP Alignment
 
-```powershell
-python -m streamlit run app.py
-```
+The assignment specifically asks to combine Sentence-BERT text embeddings and CLIP image embeddings in one plot.
 
-Open the local URL shown by Streamlit, normally `http://localhost:8501`.
+Since Sentence-BERT and CLIP are independently trained models with different embedding spaces, their raw vectors cannot be directly combined meaningfully.
 
-## Train and Test the VAE
+An experimental Ridge regression mapping was added:
 
-```powershell
-python train_vae.py
-python test_vae.py
-```
+1. Prepare 20 paired anchor sentences.
+2. Encode the sentences using Sentence-BERT.
+3. Encode the same sentences using CLIP's text encoder.
+4. Train a Ridge regression model to map Sentence-BERT vectors toward CLIP text space.
+5. Map user-provided Sentence-BERT text embeddings.
+6. Combine the mapped text vectors with CLIP image embeddings.
+7. Apply PCA and display the resulting points.
 
-- `train_vae.py` downloads Fashion-MNIST, trains the VAE and writes `fashion_vae.pth`.
-- `test_vae.py` reconstructs five test images and writes `vae_reconstruction.png`.
-- The included checkpoint can be used without retraining if it matches `vae_model.py`.
+**Important limitation:** This is a small, project-specific approximation. It has not been evaluated using held-out anchor sentences or formally validated as a reliable semantic alignment. Its plot should be interpreted as exploratory, not as a calibrated semantic distance scale.
 
-## Deployment
+The original CLIP-native visualisation is retained as a reference.
 
-The application is deployed on Streamlit Community Cloud:
+### D. Variational Autoencoder (VAE)
 
-**Live app:** https://latentspaceexplorer.streamlit.app/  
-**Repository:** https://github.com/AkashKurane/LatentSpaceExplorer  
-**Branch:** `main` · **Entry point:** `app.py`
+The project implements a fully connected Variational Autoencoder using PyTorch.
 
-The Gemini key, if used, must be configured in Streamlit Secrets, not in the repository.
+**Dataset:** Fashion-MNIST
 
-## Observed Results
+Fashion-MNIST contains 28 × 28 grayscale clothing images from ten categories.
 
-The public application was manually checked on 6 November 2026:
+The VAE architecture is:
 
-- U1: Sentence-BERT projection controls, K-Means visualisation and nearest-neighbour table displayed.
-- U2: Local TF-IDF fallback labels displayed; Gemini output not confirmed.
-- U3: The CLIP-native view plotted five text samples and three images (eight points). A separate experimental Sentence-BERT-to-CLIP Ridge bridge view has been added; its cross-model alignment quality has not yet been formally benchmarked.
-- U4: Fashion-MNIST latent-space projection and selected-point original/decoded image displayed.
-- U5: Ten occupation comparisons displayed in a table and grouped chart.
+| Component | Architecture |
+|---|---|
+| Input | 28 × 28 grayscale image |
+| Flatten | 784 features |
+| Encoder hidden layer | 784 → 400, ReLU |
+| Latent mean | 20 dimensions |
+| Latent log variance | 20 dimensions |
+| Reparameterisation | \(z=\mu+\sigma\odot\epsilon\) |
+| Decoder hidden layer | 20 → 400, ReLU |
+| Output layer | 400 → 784, Sigmoid |
+| Final output | 28 × 28 reconstructed image |
 
-Recorded VAE average loss:
+The VAE learns a compressed probabilistic representation of input images and reconstructs images from latent vectors.
 
-| Epoch | Average loss |
+The total loss combines reconstruction loss and KL divergence:
+
+\[
+L_{\text{total}}=L_{\text{reconstruction}}+L_{\text{KL}}
+\]
+
+**Training configuration:**
+
+| Parameter | Value |
+|---|---:|
+| Dataset | Fashion-MNIST |
+| Epochs | 5 |
+| Batch size | 128 |
+| Learning rate | 0.001 |
+| Optimiser | Adam |
+| Latent dimension | 20 |
+| Loss function | BCE + KL divergence |
+
+Training is performed using `train_vae.py`, and the trained checkpoint is saved as `fashion_vae.pth`.
+
+In the application, 500 Fashion-MNIST test images are encoded. Their latent mean vectors are projected using PCA. The user can select a point and view the original image beside its decoded reconstruction.
+
+### E. Occupation–Gender Association Probe
+
+The application performs an exploratory embedding-association test using ten occupations:
+
+- Doctor
+- Nurse
+- Engineer
+- Teacher
+- Scientist
+- Software Developer
+- Pilot
+- Homemaker
+- CEO
+- Construction Worker
+
+For each occupation, three sentence templates are created:
+
+**Neutral prompt:**
+
+`A person works as a {occupation}.`
+
+**Man-referenced prompt:**
+
+`A man works as a {occupation}.`
+
+**Woman-referenced prompt:**
+
+`A woman works as a {occupation}.`
+
+Sentence-BERT generates embeddings for the three templates.
+
+The application calculates cosine similarity between the neutral embedding and each gender-referenced embedding.
+
+The difference is:
+
+\[
+D=S_{\text{man}}-S_{\text{woman}}
+\]
+
+The results are displayed in a table and grouped bar chart.
+
+This is an exploratory, model- and prompt-specific association signal. It is not a validated social-bias measurement and must not be used for recruitment, hiring or other consequential decisions.
+
+## 7. Results and Observations
+
+The following results were observed in the implementation screenshots and recorded training run.
+
+### Sentence Similarity Results
+
+Selected sentence:
+
+`Machine learning helps computers learn from data.`
+
+| Nearest sentence | Cosine similarity |
+|---|---:|
+| Python is widely used for machine learning. | 0.6046 |
+| Deep learning uses neural networks. | 0.5759 |
+| Artificial intelligence is transforming technology. | 0.5041 |
+| Neural networks are inspired by the human brain. | 0.4439 |
+| SQL is used to manage relational databases. | 0.2935 |
+
+### Cluster Interpretation
+
+The application displayed TF-IDF keyword labels for five clusters after the Gemini request failed.
+
+Examples included:
+- Manage / Used
+- Exercise / Physical
+- Learning / Neural Networks
+- Using Phones / Using
+- Athletes / Olympic
+
+These are local keyword-based labels, not Gemini-generated descriptions.
+
+### CLIP and Cross-Model Alignment
+
+The recorded screenshots demonstrate:
+- A CLIP-native text and image visualisation.
+- An experimental Sentence-BERT text and CLIP image plot.
+- Five Sentence-BERT text samples and three uploaded images displayed in the experimental alignment view.
+
+The alignment bridge has not been benchmarked on held-out data. The visual separation between text and image points indicates that the mapping quality requires further investigation.
+
+### VAE Training Loss
+
+| Epoch | Recorded average loss |
 |---:|---:|
 | 1 | 285.4960 |
 | 2 | 256.2420 |
@@ -178,31 +318,193 @@ Recorded VAE average loss:
 | 4 | 247.6893 |
 | 5 | 246.1457 |
 
-These are observations from one training run, not formal benchmark results.
+The recorded loss decreased across the five training epochs.
 
-## Limitations and Responsible Use
+The reconstructed images were recognisable but somewhat blurry, which is a limitation of the compact architecture and short training run.
 
-- Gemini availability was not confirmed in the recorded cloud test; TF-IDF fallback worked.
-- The strict U3 Sentence-BERT-text plus CLIP-image joint plot remains an assignment gap.
-- PCA and UMAP can distort high-dimensional distances and local structure.
-- VAE reconstructions may be blurry due to the small model and short training run.
-- Occupation–gender results depend on model, prompts and selected occupations; they do not establish real-world discrimination.
-- Do not use this probe for recruitment, hiring or other high-impact decisions.
-- Avoid confidential or personal data in prompts. When Gemini is used, cluster text is sent to Google's service.
-- Keep API keys private and comply with upstream model and dataset licences.
+### Occupation–Gender Association Results
 
-## References
+| Occupation | Man vs neutral | Woman vs neutral | Difference |
+|---|---:|---:|---:|
+| Doctor | 0.8896 | 0.8177 | 0.0719 |
+| Nurse | 0.8764 | 0.8517 | 0.0247 |
+| Engineer | 0.8834 | 0.7974 | 0.0860 |
+| Teacher | 0.8886 | 0.8325 | 0.0561 |
+| Scientist | 0.8897 | 0.7946 | 0.0951 |
+| Software Developer | 0.8901 | 0.7978 | 0.0924 |
+| Pilot | 0.9071 | 0.8282 | 0.0789 |
+| Homemaker | 0.8994 | 0.8359 | 0.0635 |
+| CEO | 0.9242 | 0.8421 | 0.0821 |
+| Construction Worker | 0.8934 | 0.8030 | 0.0904 |
 
-- [Sentence-Transformers](https://www.sbert.net/)
-- [Hugging Face Transformers](https://huggingface.co/docs/transformers/)
-- [CLIP](https://github.com/openai/CLIP)
-- [PyTorch](https://pytorch.org/)
-- [Fashion-MNIST](https://github.com/zalandoresearch/fashion-mnist)
-- [scikit-learn](https://scikit-learn.org/)
+These values represent cosine-similarity comparisons for the selected templates. They are not percentages of bias or evidence of real-world discrimination.
 
-## Author
+## 8. Limitations and Failure Cases
 
-**Akash Mahadeo Kurane**  
+1. **Gemini API availability:** Gemini did not complete the recorded cluster-naming request. The local TF-IDF fallback produced keyword labels successfully.
+2. **Experimental cross-model alignment:** The Ridge mapping uses only 20 paired anchor sentences and has not been formally validated on held-out data.
+3. **Dimensionality reduction:** PCA and UMAP can distort the original high-dimensional distances and neighbourhood structures.
+4. **VAE reconstruction quality:** The compact VAE was trained for five epochs, and some reconstructed images are blurry.
+5. **Occupation association probe:** Results depend on model choice, sentence templates and selected occupations. They do not establish discrimination or fairness.
+6. **Model dependencies:** Pretrained models must be downloaded and loaded successfully for the relevant application features to work.
 
-- GitHub: [AkashKurane](https://github.com/AkashKurane)
-- LinkedIn: [Akash Mahadeo Kurane](https://www.linkedin.com/in/akash-mahadeo-kurane-1bb3372a6/)
+## 9. Responsible AI, Privacy and Licensing
+
+- The occupation–gender probe is intended for educational analysis only.
+- Its results must not be used to make hiring, recruitment or other high-impact decisions.
+- Users should avoid entering confidential or sensitive personal information.
+- When Gemini is used, cluster text is sent to Google's configured GenAI service.
+- API keys must be stored in platform secrets settings and must never be committed to the repository.
+- Users should review the upstream model cards, dataset terms, model licences and service terms before using the models beyond this educational project.
+- The application should not be treated as a validated fairness, identity or decision-making system.
+
+## 10. Repository Structure
+
+```text
+LatentSpaceExplorer/
+│
+├── app.py
+├── vae_model.py
+├── train_vae.py
+├── test_vae.py
+├── test_streamlit.py
+│
+├── fashion_vae.pth
+├── vae_reconstruction.png
+│
+├── requirements.txt
+├── README.md
+├── MODEL_CARD.md
+├── .gitignore
+│
+├── .github/
+│   └── workflows/
+│       └── python-checks.yml
+│
+└── .streamlit/
+    └── secrets.toml    # Local only; never commit
+```
+
+## 11. Installation and Setup
+
+### Requirements
+
+- Python 3.12
+- Git
+- Internet connection for downloading pretrained models and Fashion-MNIST
+- Recommended: 8 GB or more RAM for comfortable model loading
+
+### Clone the repository
+
+```bash
+git clone https://github.com/AkashKurane/LatentSpaceExplorer.git
+cd LatentSpaceExplorer
+```
+
+### Create and activate the environment
+
+```bash
+conda create -n latentspace python=3.12
+conda activate latentspace
+```
+
+### Install dependencies
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+### Configure Gemini (Optional)
+
+Create a local file:
+
+`.streamlit/secrets.toml`
+
+Add:
+
+```toml
+GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
+```
+
+For Streamlit Community Cloud, add the same setting under the application's **Settings → Secrets**.
+
+Never commit the API key or the secrets file to GitHub.
+
+If Gemini is unavailable or not configured, the application uses its TF-IDF fallback.
+
+### Run the application
+
+```bash
+python -m streamlit run app.py
+```
+
+Open the local URL provided by Streamlit, normally:
+
+`http://localhost:8501`
+
+### Train the VAE
+
+```bash
+python train_vae.py
+```
+
+### Test VAE reconstruction
+
+```bash
+python test_vae.py
+```
+
+The training script saves the checkpoint as `fashion_vae.pth`. The test script produces `vae_reconstruction.png`.
+
+The application expects the trained checkpoint to be available in the repository's working directory.
+
+## 12. Deployment
+
+The application is deployed using Streamlit Community Cloud.
+
+**Live application:**  
+https://latentspaceexplorer.streamlit.app/
+
+**GitHub repository:**  
+https://github.com/AkashKurane/LatentSpaceExplorer
+
+**Branch:** `main`
+
+**Application entry point:** `app.py`
+
+The Gemini API key, when used, is configured through Streamlit Secrets rather than stored in source code.
+
+## 13. Model Card
+
+The repository includes a separate `MODEL_CARD.md` describing:
+
+- Sentence-BERT model information.
+- CLIP model information.
+- VAE architecture and training configuration.
+- Gemini and TF-IDF fallback behaviour.
+- Intended uses and limitations.
+- Data and privacy considerations.
+- Responsible-use restrictions.
+- Experimental cross-model alignment.
+
+## 14. References
+
+1. Sentence-Transformers Documentation: https://www.sbert.net/
+2. Hugging Face Transformers Documentation: https://huggingface.co/docs/transformers/
+3. CLIP Repository: https://github.com/openai/CLIP
+4. PyTorch Documentation: https://pytorch.org/docs/stable/index.html
+5. Fashion-MNIST Dataset: https://github.com/zalandoresearch/fashion-mnist
+6. Scikit-learn Documentation: https://scikit-learn.org/stable/
+7. Streamlit Documentation: https://docs.streamlit.io/
+8. UMAP Documentation: https://umap-learn.readthedocs.io/
+
+
+- GitHub: https://github.com/AkashKurane
+- LinkedIn: https://www.linkedin.com/in/akash-mahadeo-kurane-1bb3372a6/
+
+---
+
+**Project:** Text & Image Latent-Space Explorer  
+**Assignment:** P6 – Generative AI Mini-Project  
+**Status:** Deployed educational prototype with documented experimental components and limitations.
