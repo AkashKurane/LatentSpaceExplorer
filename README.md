@@ -17,7 +17,7 @@ An interactive web application that explores how text and images are represented
 ---
 
 ## 📌 Project Information
-|
+
 ---
 
 ## 📖 1. Introduction
