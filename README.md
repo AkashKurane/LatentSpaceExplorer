@@ -22,7 +22,7 @@ Machine-learning models represent text and images as numerical vectors called **
 |---|---|---|---|
 | **U1** | 2D projection and nearest neighbours | Sentence-BERT, PCA/UMAP, K-Means, point selection and cosine-similarity neighbours | Implemented |
 | **U2** | LLM cluster naming and Fashion-MNIST VAE training | Gemini attempt with TF-IDF fallback; VAE training script and checkpoint | Partial: fallback verified; Gemini output not confirmed |
-| **U3** | Sentence-BERT text and CLIP image embeddings in one plot | Joint CLIP text + CLIP image plot | Partial: strict SBERT+CLIP cross-model plot not implemented |
+| **U3** | Sentence-BERT text and CLIP image embeddings in one plot | CLIP-native text/image plot plus an experimental Ridge bridge mapping Sentence-BERT text into CLIP text space using 20 paired anchor sentences, then plotting with CLIP image vectors | Implemented as an experimental alignment; not formally evaluated |
 | **U4** | Decode a selected latent point with VAE | Fashion-MNIST VAE latent projection and selected-point decoding | Implemented |
 | **U5** | Occupation–gender association probe | Matched prompts, cosine similarities, table and grouped chart | Implemented |
 
@@ -57,7 +57,7 @@ The application uses `openai/clip-vit-base-patch32` to encode text prompts and u
 
 **Observed deployment test:** Five text samples and three uploaded images were plotted together as eight CLIP points.
 
-**Assignment gap:** The current combined plot uses CLIP text embeddings and CLIP image embeddings. It does not include Sentence-BERT vectors in that same plot. Sentence-BERT and CLIP vectors are from different models and should not simply be concatenated. If the evaluator strictly requires Sentence-BERT text plus CLIP image embeddings in one plot, a separate alignment approach is still required. The current app does not claim that requirement is complete.
+**Cross-model alignment view:** A separate U3 view now encodes text with Sentence-BERT and images with CLIP. It learns an experimental Ridge mapping from 20 paired project anchor sentences, each encoded by both Sentence-BERT and CLIP's text encoder. The mapped Sentence-BERT vectors are then plotted with CLIP image vectors. This avoids directly concatenating incompatible raw vectors. The bridge is small and project-specific, has not been formally evaluated on held-out data, and should be treated as exploratory rather than as a validated universal alignment. The original CLIP-native text/image plot is retained as a reference.
 
 ## U4 – VAE Latent-Point Decoding
 
@@ -166,7 +166,7 @@ The public application was manually checked on 6 November 2026:
 
 - U1: Sentence-BERT projection controls, K-Means visualisation and nearest-neighbour table displayed.
 - U2: Local TF-IDF fallback labels displayed; Gemini output not confirmed.
-- U3: Five texts and three images plotted using CLIP (eight points).
+- U3: The CLIP-native view plotted five text samples and three images (eight points). A separate experimental Sentence-BERT-to-CLIP Ridge bridge view has been added; its cross-model alignment quality has not yet been formally benchmarked.
 - U4: Fashion-MNIST latent-space projection and selected-point original/decoded image displayed.
 - U5: Ten occupation comparisons displayed in a table and grouped chart.
 
