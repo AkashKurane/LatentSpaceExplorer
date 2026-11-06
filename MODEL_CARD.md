@@ -12,7 +12,7 @@ This educational application combines two third-party pretrained embedding model
 - **U4:** VAE latent-space visualisation and decoding of a selected encoded test example.
 - **U5:** Occupation–gender association probe using sentence-template similarity comparisons.
 
-**U3 clarification:** The deployed joint plot uses CLIP text embeddings and CLIP image embeddings. Sentence-BERT vectors are not directly mixed with CLIP vectors because they are produced by different models and are not inherently aligned. If the evaluator requires Sentence-BERT text specifically in the same plot as CLIP images, additional cross-model alignment or a revised experiment is needed. The current app does not claim this stricter requirement is complete.
+**U3 cross-model bridge:** In addition to the native CLIP text/image plot, the app now has an experimental view that encodes text with Sentence-BERT, encodes uploaded images with CLIP, and maps Sentence-BERT text vectors toward CLIP text space using Ridge regression calibrated on 20 paired project anchor sentences (each encoded by both text encoders). The mapped text vectors are plotted with CLIP image vectors. This is an exploratory project-specific bridge; it has not been evaluated on held-out anchor sentences and is not a validated universal alignment. Interpret it as a demonstration of cross-model alignment, not as a calibrated semantic metric.
 
 ## Sentence-BERT
 
@@ -24,7 +24,7 @@ This educational application combines two third-party pretrained embedding model
 ## CLIP
 
 - **Model:** `openai/clip-vit-base-patch32`.
-- **Role:** Text and image embeddings in a shared representation for U3.
+- **Role:** Text and image embeddings in a shared representation for the native U3 plot; also supplies CLIP text anchor vectors for the experimental Sentence-BERT-to-CLIP bridge.
 - **Intended use:** Educational comparison of text and image representations.
 - **Limitations:** Similarity does not prove that an image depicts a statement. Model outputs can reflect dataset and social biases and vary with prompt wording, language, content and domain. A 2D PCA plot is only a projection, not a classifier.
 
