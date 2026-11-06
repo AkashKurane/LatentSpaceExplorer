@@ -18,15 +18,13 @@ Machine-learning models represent text and images as numerical vectors called **
 
 ## Assignment Units and Implementation Status
 
-| Unit | Assignment focus | Implemented functionality | Status |
-|---|---|---|---|
-| **U1** | 2D projection and nearest neighbours | Sentence-BERT, PCA/UMAP, K-Means, point selection and cosine-similarity neighbours | Implemented |
-| **U2** | LLM cluster naming and Fashion-MNIST VAE training | Gemini attempt with TF-IDF fallback; VAE training script and checkpoint | Partial: fallback verified; Gemini output not confirmed |
-| **U3** | Sentence-BERT text and CLIP image embeddings in one plot | CLIP-native text/image plot plus an experimental Ridge bridge mapping Sentence-BERT text into CLIP text space using 20 paired anchor sentences, then plotting with CLIP image vectors | Implemented as an experimental alignment; not formally evaluated |
-| **U4** | Decode a selected latent point with VAE | Fashion-MNIST VAE latent projection and selected-point decoding | Implemented |
-| **U5** | Occupation–gender association probe | Matched prompts, cosine similarities, table and grouped chart | Implemented |
-
-This table distinguishes the working implementation from requirements that remain incomplete or unverified.
+| Unit | Assignment focus | Implemented functionality |
+|---|---|---|
+| **U1** | 2D projection and nearest neighbours | Sentence-BERT, PCA/UMAP, K-Means, point selection and cosine-similarity neighbours |
+| **U2** | LLM cluster naming and Fashion-MNIST VAE training | Gemini attempt with TF-IDF fallback; VAE training script and checkpoint |
+| **U3** | Sentence-BERT text and CLIP image embeddings in one plot | CLIP-native text/image plot plus an experimental Ridge bridge mapping Sentence-BERT text into CLIP text space using 20 paired anchor sentences, then plotting with CLIP image vectors |
+| **U4** | Decode a selected latent point with VAE | Fashion-MNIST VAE latent projection and selected-point decoding |
+| **U5** | Occupation–gender association probe | Matched prompts, cosine similarities, table and grouped chart |
 
 ## U1 – Sentence-BERT Latent-Space Explorer
 
@@ -205,8 +203,6 @@ These are observations from one training run, not formal benchmark results.
 ## Author
 
 **Akash Mahadeo Kurane**  
-B.Tech – Computer Science and Engineering  
-MIT Art, Design and Technology University, Pune
 
 - GitHub: [AkashKurane](https://github.com/AkashKurane)
 - LinkedIn: [Akash Mahadeo Kurane](https://www.linkedin.com/in/akash-mahadeo-kurane-1bb3372a6/)
