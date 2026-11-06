@@ -590,20 +590,18 @@ if "cluster_insights" not in st.session_state:
 if st.button("Generate Cluster Names with Gemini"):
 
     if not api_key:
-        st.error("Gemini API key not found. Configure GEMINI_API_KEY in Streamlit Secrets. Local TF-IDF fallback is available when a request is attempted with a configured key but the service fails.")
-
+        st.warning(
+            "Gemini API key is not configured. Showing local TF-IDF keyword labels instead."
+        )
+        st.session_state.cluster_insights = generate_local_cluster_names(cluster_payload)
     else:
         with st.spinner("Gemini is analysing your clusters..."):
             try:
-                result = generate_cluster_names(
-                    cluster_payload,
-                    api_key
-                )
-
+                result = generate_cluster_names(cluster_payload, api_key)
                 st.session_state.cluster_insights = result
-
             except Exception as e:
-                st.error(f"Gemini request failed: {e}")
+                st.error(f"Cluster interpretation failed: {e}")
+                st.session_state.cluster_insights = generate_local_cluster_names(cluster_payload)
 
 # Display generated cluster names
 if st.session_state.cluster_insights:
